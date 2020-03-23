@@ -11,3 +11,30 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.gameboard .gameboard {
+  max-width: 550px;
+
+}
+
+.gameboard .gameboard .cell {
+  background: #acacac;
+  float: left;
+  height: 50px;
+  width: 50px;
+  text-align: center;
+  color: #ffffff;
+  border: 1px solid #808080;
+}
+
+.gameboard .gameboard .hidden {
+  background: #2f4f4f;
+}
+
+.gameboard .gameboard .is-flag {
+  color: #0000ff
+}
+
+.gameboard .gameboard .is-mine {
+  color: #ff0000
+}

@@ -9,24 +9,23 @@ import PropTypes from 'prop-types';
 // The cell that is rightclicked will show a flag.
 export default class Cell extends React.Component {
   current_cell_state() {
-    // const {value} = this.props
+    const {value} = this.props
 
-    // if (!value.revealed) {
-    //   if (value.flagged) {
-    //     return "F";
-    //   } else {
-    //     return null;
-    //   }
-    // }
-    // if (value.bomb) {
-    //   return "*";
-    // }
-    // // Neighbor logic here
-    // if (value.number === 0) {
-    //   return null
-    // }
-    // return value.number
-    return 1
+    if (!value.revealed) {
+      if (value.flagged) {
+        return "F";
+      } else {
+        return null;
+      }
+    }
+    if (value.is_bomb) {
+      return "*";
+    }
+    // Neighbor logic here
+    if (value.number === 0) {
+      return null
+    }
+    return value.number
   }
 
   render() {
@@ -35,9 +34,9 @@ export default class Cell extends React.Component {
 
     let className =
       "cell" +
-      (value.isRevealed ? "" : " hidden") +
-      (value.isMine ? " is-mine" : "") +
-      (value.isFlagged ? " is-flag" : "");
+      (value.revealed ? "" : " hidden") +
+      (value.is_bomb ? " is-mine" : "") +
+      (value.flagged ? " is-flag" : "");
 
     return(
       <div

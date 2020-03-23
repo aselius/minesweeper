@@ -19,7 +19,7 @@ class GameCanvas extends React.Component {
   render() {
     const {bombs, height, width} = this.game_state
     return (
-      <div className = "game_board">
+      <div className = "gameboard">
         <GameBoard height={height} width={width} bombs={bombs}/>
       </div>
     )
