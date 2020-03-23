@@ -53,5 +53,5 @@ export default class Cell extends React.Component {
 Cell.propTypes = {
   value: PropTypes.object,
   onClick: PropTypes.func,
-  onContextMenu: PropTypes.func
+  onContextMenu: PropTypes.func,
 }

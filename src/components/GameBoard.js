@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import Cell from './GameCells'
 
 export default class GameBoard extends React.Component {
-  gamestate = {
+  state = {
     board_data: this.initialize_board_data(this.props.width, this.props.height, this.props.bombs),
     status: "Flag all the mines!",
-    n_bombs: this.props.bombs
-  }
+    nbombs: this.props.bombs,
+  };
 
   initialize_matrix(width, height) {
     // Create an initial board data with a matrix format [[],[]]
@@ -121,6 +121,7 @@ export default class GameBoard extends React.Component {
   }
 
   initialize_board_data(width, height, bombs) {
+    // fill board data with randomized bombs and corresponding cell numbers
     let data = this.initialize_matrix(width, height);
     data = this.initialize_random_bombs(data, bombs);
     data = this.calculate_cell_numbers(data);
@@ -128,7 +129,8 @@ export default class GameBoard extends React.Component {
   }
 
   show_board() {
-    let copy_data = this.gamestate.board_data;
+    // flip all the cells and show the board.
+    let copy_data = this.state.board_data;
     const height = copy_data.length;
     const width = copy_data[0].length;
     for (let r = 0; r < height; r++) {
@@ -140,6 +142,7 @@ export default class GameBoard extends React.Component {
   }
 
   peek_surrounding(data, r, c) {
+    // Refactor the kernel function so that we can reduce redundancy.
     const surrounding = [];
     // could do padding by 1 on all sides, or do condtional look up on all sides
     // since conditionals are easier ill just do conditionals
@@ -188,12 +191,48 @@ export default class GameBoard extends React.Component {
     return data;
   }
 
+  get_unopened_cells(data) {
+    const unopened_cells = []
+    data.map(row => {
+      row.map(dp => {
+        if (!dp.revealed) {
+          unopened_cells.push(dp);
+        }
+      });
+    });
+    return unopened_cells;
+  }
+
+  get_flagged_cells(data) {
+    const flagged_cells = []
+    data.map(row => {
+      row.map(dp => {
+        if (dp.flagged) {
+          flagged_cells.push(dp);
+        }
+      });
+    });
+    return flagged_cells;
+  }
+
+  get_bomb_cells(data) {
+    const bomb_cells = []
+    data.map(row => {
+      row.map(dp => {
+        if (dp.is_bomb) {
+          bomb_cells.push(dp);
+        }
+      });
+    });
+    return bomb_cells;
+  }
+
   cell_clicked(r, c) {
     // On click invoked function should flip cell to revealed cell.
     // there is a win condition here when you open all cells without mines
     // also a loss condition when you click on a bomb
     console.log("clicked")
-    if (this.gamestate.board_data[r][c].is_bomb) {
+    if (this.state.board_data[r][c].is_bomb) {
       this.show_board()
       this.setState({status: "You clicked on a bomb."});
       alert("Game Over. You clicked on a bomb. Refresh to Restart.")
@@ -201,12 +240,12 @@ export default class GameBoard extends React.Component {
     }
 
     // You can't click on items you've flagged or already revealed.
-    if (this.gamestate.board_data[r][c].revealed || this.gamestate.board_data[r][c].flagged) {
+    if (this.state.board_data[r][c].revealed || this.state.board_data[r][c].flagged) {
       return null;
     }
 
     // since we want react to rerender we need a copy of the data and update that
-    let deepcopy_gamedata = this.gamestate.board_data;
+    let deepcopy_gamedata = this.state.board_data;
     deepcopy_gamedata[r][c].revealed = true;
     deepcopy_gamedata[r][c].flagged = false;
 
@@ -221,31 +260,55 @@ export default class GameBoard extends React.Component {
 
     // if the amount of cells left after you filp the tile is equal to the
     // number of bombs in the game, you win.
+    if (this.get_unopened_cells(deepcopy_gamedata).length === this.props.bombs) {
+      this.setState({status: "You won!"});
+      this.show_board();
+      alert("You Won!");
+    }
 
     this.setState({
       board_data: deepcopy_gamedata,
-      n_bombs: this.props.bombs
+      nbombs: this.props.bombs - this.get_flagged_cells(deepcopy_gamedata).length,
     })
   }
 
   cell_flagged(r, c) {
     // there is a win condition here when you correctly flag all the bombs
+    // this condition is a bit more tricky since the cells that are flagged and the cells that
+    // are with bombs have to be exactly the same.
+    // also we want this to trigger once we flag the last bomb so this needs to happen before
+    // we update the state. we can do this with an internal bomb counter.
     console.log("flagged")
-    if (this.gamestate.board_data[r][c].revealed) {
+    if (this.state.board_data[r][c].revealed) {
       return null;
     }
-    let deepcopy_gamedata = this.gamestate.board_data;
-    let n_bombs = this.gamestate.n_bombs;
+    let deepcopy_gamedata = this.state.board_data;
+    let bombs = this.state.nbombs;
 
     if (deepcopy_gamedata[r][c].flagged) {
       deepcopy_gamedata[r][c].flagged = false;
+      bombs += 1;
     } else {
       deepcopy_gamedata[r][c].flagged = true;
+      bombs -= 1;
+    }
+
+    if (bombs === 0) {
+      const bomb_cells = this.get_bomb_cells(deepcopy_gamedata);
+      const flagged_cells = this.get_flagged_cells(deepcopy_gamedata);
+      // order of these two cells shouldnt matter since the traversal records in the same sequence
+      if (JSON.stringify(bomb_cells) === JSON.stringify(flagged_cells) ) {
+        this.setState({status: "You won!"});
+        this.show_board();
+        alert("You Won!");
+      }
     }
 
     this.setState({
-      board_data: deepcopy_gamedata
+      board_data: deepcopy_gamedata,
+      nbombs: bombs,
     });
+
   }
 
   render_game(data) {
@@ -269,10 +332,10 @@ export default class GameBoard extends React.Component {
       <div className="gameboard">
         <div className="gameinfo">
           <span className="gamestatus">
-            {this.gamestate.status}
+            {this.state.status}
           </span>
         </div>
-        {this.render_game(this.gamestate.board_data)}
+        {this.render_game(this.state.board_data)}
       </div>
     )
   };
@@ -281,5 +344,5 @@ export default class GameBoard extends React.Component {
 GameBoard.propTypes = {
   bombs: PropTypes.number,
   height: PropTypes.number,
-  width: PropTypes.number
+  width: PropTypes.number,
 }

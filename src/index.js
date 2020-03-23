@@ -10,14 +10,14 @@ import * as serviceWorker from './serviceWorker';
 // clickable cells. All the model is just going to be included in the components
 // and the components will just either just be functions with props or classes.
 class GameCanvas extends React.Component {
-  game_state = {
+  state = {
     bombs: 10,
     height: 10,
-    width: 10
+    width: 10,
   };
 
   render() {
-    const {bombs, height, width} = this.game_state
+    const {bombs, height, width} = this.state
     return (
       <div className = "gameboard">
         <GameBoard height={height} width={width} bombs={bombs}/>
