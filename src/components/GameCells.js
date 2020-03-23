@@ -9,39 +9,50 @@ import PropTypes from 'prop-types';
 // The cell that is rightclicked will show a flag.
 export default class Cell extends React.Component {
   current_cell_state() {
-    const {value} = this.props
+    // const {value} = this.props
 
-    if (!value.revealed) {
-      if (value.flagged) {
-        return "F";
-      } else {
-        return null;
-      }
-    }
-    if (value.bomb) {
-      return "*";
-    }
-    // Neighbor logic here
+    // if (!value.revealed) {
+    //   if (value.flagged) {
+    //     return "F";
+    //   } else {
+    //     return null;
+    //   }
+    // }
+    // if (value.bomb) {
+    //   return "*";
+    // }
+    // // Neighbor logic here
+    // if (value.number === 0) {
+    //   return null
+    // }
+    // return value.number
+    return 1
   }
 
   render() {
+    const {value, onClick, onContextMenu} = this.props
     // onClick={} oncontextmenu={} in the div element.
+
+    let className =
+      "cell" +
+      (value.isRevealed ? "" : " hidden") +
+      (value.isMine ? " is-mine" : "") +
+      (value.isFlagged ? " is-flag" : "");
+
     return(
-      <div>
+      <div
+        className={className}
+        onClick={onClick}
+        onContextMenu={onContextMenu}
+      >
         {this.current_cell_state()}
       </div>
     );
   }
 }
 
-const cell_item_status = {
-  revealed: PropTypes.bool,
-  bomb: PropTypes.bool,
-  flagged: PropTypes.bool
-}
-
 Cell.propTypes = {
-  value: PropTypes.objectOf(PropTypes.shape(cell_item_status)),
-  click: PropTypes.func,
-  ctxmenu: PropTypes.func
+  value: PropTypes.object,
+  onClick: PropTypes.func,
+  onContextMenu: PropTypes.func
 }
