@@ -1,5 +1,18 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+# Basic minesweeper w React
+
+To bring up in `localhost:3000`
+```
+npm start
+```
+
+- Areas for refactoring and improvement:
+1. Function reuse. Combine together the logic that is used to calculate the cell numbers and the flag win condition
+2. Convert react components to react hooks to reduce wrapper hell
+3. For any more complicated logic TDD is the way to go. I only wrote this with manual testing since the path to the MVP was pretty straight forward: Get gameboard rendered on the screen -> implement cells -> get cells to have neighboring bomb numbers -> add onevent functions -> add win/loss conditions. And testing manually was very easy and straightforward.
+4. Enforce stricter proptypes typechecking between components.
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -11,11 +24,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `npm run build`
 
