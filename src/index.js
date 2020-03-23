@@ -1,15 +1,37 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
 import './index.css';
-import App from './App';
+import GameBoard from './components/GameBoard';
 import * as serviceWorker from './serviceWorker';
 
+// NOTE: Create a standard renderable DOM element that will hold the game "canvas"
+// this element will inturn use a game board component that will display the
+// clickable cells. All the model is just going to be included in the components
+// and the components will just either just be functions with props or classes.
+class GameCanvas extends React.Component {
+  game_state = {
+    bombs: 10,
+    height: 10,
+    width: 10
+  };
+
+  render() {
+    const {bombs, height, width} = this.game_state
+    return (
+      <div className = "game_board">
+        <GameBoard height={height} width={width} bombs={bombs}/>
+      </div>
+    )
+  }
+}
+
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <GameCanvas/>,
   document.getElementById('root')
 );
+
+// NOTE: I'm not going to worry about offline first progressive apps here.
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
